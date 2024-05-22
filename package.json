@@ -1,0 +1,14 @@
+{
+  "name": "temp",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Aidan Mulholland <aidanmulholland89@gmail.com>",
+  "license": "MIT",
+  "packageManager": "yarn@4.2.2",
+  "workspaces": {
+    "packages": [
+      "server",
+      "client"
+    ]
+  }
+}
