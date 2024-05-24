@@ -7,8 +7,15 @@
   "packageManager": "yarn@4.2.2",
   "workspaces": {
     "packages": [
+      "auth-server",
       "server",
-      "client"
+      "client",
+      "common"
     ]
+  },
+  "scripts": {
+    "build:types": "yarn workspace common build",
+    "start:auth": "yarn workspace auth-server start",
+    "start:server": "yarn workspace server start"
   }
 }
