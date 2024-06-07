@@ -22,7 +22,13 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "paths": {
+      "components/*": ["./components/*"],
+      "store/*": ["./store/*"],
+      "images/*": ["./images/*"],
+    }
+  },
   },
   "include": [
     "env.d.ts",
@@ -34,4 +40,5 @@
   "exclude": [
     "node_modules"
   ]
+  
 }

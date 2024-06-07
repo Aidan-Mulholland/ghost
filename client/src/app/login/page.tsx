@@ -1,14 +1,16 @@
 "use client";
-import { Input, Box, Flex, FormControl, FormLabel, Text, Spacer, Stack, Button } from "@chakra-ui/react";
+import { Input, Box, Flex, FormControl, FormLabel, Text, Stack, Button, Alert } from "@chakra-ui/react";
 import Image from "next/image";
 import Logo from "../../images/logo.svg";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
-  console.log("here" + process.env.AUTH_SERVER);
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [failedLogin, setFailedLogin] = useState(false);
 
   async function handleSubmit() {
     try {
@@ -19,7 +21,13 @@ export default function Page() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
+        credentials: "include",
       });
+      if (!res.ok) {
+        setFailedLogin(true);
+        return;
+      }
+      router.push("/dms");
     } catch (error) {
       console.error(error);
     } finally {
@@ -53,6 +61,7 @@ export default function Page() {
         <Flex borderRadius={"0.4em"} bgColor={"Background"} padding={"1em"} boxShadow={"dark-lg"} width={"500px"}>
           <FormControl>
             <Stack spacing={"0.7em"}>
+              {failedLogin && <Alert status="error">Incorrect email or password</Alert>}
               <Box>
                 <FormLabel>Email address</FormLabel>
                 <Input type="email" value={email} onChange={(event) => setEmail(event.target.value)} />
@@ -67,7 +76,7 @@ export default function Page() {
                 color={"white"}
                 _hover={{ bgColor: "#842750" }}
                 transition={"0.2s all ease"}
-                onClick={handleSubmit}
+                onClick={async () => await handleSubmit()}
                 isLoading={submitting}
               >
                 Login

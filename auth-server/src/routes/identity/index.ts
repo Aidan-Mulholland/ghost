@@ -10,7 +10,6 @@ import { randomUUID } from "crypto";
 export const router = express.Router();
 
 router.post("/login", async (req, res) => {
-  console.log(req.body);
   const parsedReq = loginRequestSchema.safeParse(req.body);
   if (!parsedReq.success) {
     console.error(parsedReq.error);
@@ -21,19 +20,39 @@ router.post("/login", async (req, res) => {
   const controller = new IdentityController();
   const identity = await controller.get({ email });
   if (!identity) {
-    return res.status(404).send("Account not found");
+    return res.status(404).send("Account not found").end();
   }
 
   const validPassword = await compare(password, identity.password);
+  console.log(password, identity.password);
   if (!validPassword) {
-    return res.status(403);
+    return res.status(403).end();
   }
 
   const accessToken = generateAccessToken(identity);
   const refreshToken = generateRefreshToken(identity);
   const identityToken = generateIdentityToken(identity);
 
-  res.status(200).json({ accessToken, refreshToken, identityToken });
+  res.status(200);
+  res.cookie("accessToken", accessToken, {
+    sameSite: "lax",
+    secure: true,
+    httpOnly: true,
+    path: "/",
+  });
+  res.cookie("refreshToken", refreshToken, {
+    sameSite: "lax",
+    secure: true,
+    httpOnly: true,
+    path: "/",
+  });
+  res.cookie("identityToken", identityToken, {
+    sameSite: "lax",
+    secure: true,
+    httpOnly: false,
+    path: "/",
+  });
+  res.end();
 });
 
 router.post("/signup", async (req, res) => {
