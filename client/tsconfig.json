@@ -29,7 +29,6 @@
       "images/*": ["./images/*"],
     }
   },
-  },
   "include": [
     "env.d.ts",
     "next-env.d.ts",
@@ -40,5 +39,4 @@
   "exclude": [
     "node_modules"
   ]
-  
 }
