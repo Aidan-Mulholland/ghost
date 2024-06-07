@@ -16,6 +16,7 @@
   "scripts": {
     "build:types": "yarn workspace common build",
     "start:auth": "yarn workspace auth-server start",
-    "start:server": "yarn workspace server start"
+    "start:server": "yarn workspace server start",
+    "dev:client": "yarn workspace client dev"
   }
 }

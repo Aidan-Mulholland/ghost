@@ -13,7 +13,8 @@
       "configs/*": ["./configs/*"],
       "models/*": ["./models/*"],
       "controllers/*": ["./controllers/*"],
-      "routes/*": ["./routes/*"]
+      "routes/*": ["./routes/*"],
+      "util/*": ["./util/*"]
     }
   },
 }
