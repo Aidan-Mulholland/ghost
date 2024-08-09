@@ -1,5 +1,5 @@
 import express from "express";
-import { router } from "routes/identity";
+import { identityRouter } from "routes/identity";
 import cors from "cors";
 
 const app = express();
@@ -7,7 +7,7 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(cors({ credentials: true, exposedHeaders: ["Set-Cookie"], origin: "http://localhost:3000" }));
 
-app.use("/", router);
+app.use("/", identityRouter);
 app.listen(3001, () => {
   console.log("Server ready on port 3001");
   let route: any;
