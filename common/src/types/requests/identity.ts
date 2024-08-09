@@ -20,3 +20,10 @@ export const refreshTokenRequestSchema = z.object({
 });
 
 export type RefreshTokenRequest = z.infer<typeof refreshTokenRequestSchema>;
+
+export const revokeRequestSchema = z.object({
+  token: z.string(),
+  token_type_hint: z.enum(["refresh", "access"]),
+});
+
+export type RevokeRequest = z.infer<typeof revokeRequestSchema>;

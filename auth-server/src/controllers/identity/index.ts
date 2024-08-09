@@ -1,65 +1,41 @@
 import { db } from "configs/db";
 import { Identity } from "common";
+import { identity } from "configs/schema";
+import { eq } from "drizzle-orm";
 
 export class IdentityController {
-  public async get(options: { id?: string; email?: string }): Promise<Identity | undefined> {
+  public async get(options: { id?: number; email?: string }): Promise<Identity | undefined> {
     if (options.email === undefined && options.id === undefined) {
       throw Error("Id or Email must be provided");
     }
     if (options.email !== undefined) {
-      const query = {
-        text: "SELECT * FROM identity WHERE email = $1",
-        values: [options.email],
-      };
-      const data = await db.query<Identity>(query);
-      console.log(data.rows);
-      if (data.rowCount === 1) return data.rows[0];
+      const data = await db.select().from(identity).where(eq(identity.email, options.email));
+      if (data.length === 1) return data[0];
     } else if (options.id !== undefined) {
-      const query = {
-        text: "SELECT * FROM identity WHERE id = $1",
-        values: [options.id],
-      };
-      const data = await db.query<Identity>(query);
-      if (data.rowCount === 1) return data.rows[0];
+      const data = await db.select().from(identity).where(eq(identity.id, options.id));
+      if (data.length === 1) return data[0];
     }
   }
 
   public async list(): Promise<Identity[]> {
-    const query = {
-      text: "SELECT * FROM identity",
-    };
-    const data = await db.query<Identity>(query);
-    return data.rows;
+    const data = await db.select().from(identity);
+    return data;
   }
 
-  public async update(identity: Identity): Promise<Identity | undefined> {
-    const query = {
-      text: `UPDATE identity SET ${Object.keys(identity).map((field, index) => {
-        if (field !== "id") `${field} = $${index + 1}`;
-      })} WHERE id = $${Object.keys(identity).length}`,
-      values: Object.values(identity),
-    };
-    const data = await db.query<Identity>(query);
-    if (data.rowCount === 1) return data.rows[0];
+  public async update(target: Identity): Promise<Identity | undefined> {
+    const data = await db.update(identity).set(target).where(eq(identity.id, target.id)).returning();
+    if (data.length === 1) return data[0];
   }
 
-  public async create(identity: Identity): Promise<Identity> {
-    const query = {
-      text: `INSERT INTO identity(${Object.keys(identity)}) VALUES(${Object.keys(identity).map(
-        (field, index) => `$${index + 1}`
-      )}) RETURNING *`,
-      values: Object.values(identity),
-    };
-    const data = await db.query<Identity>(query);
-    return data.rows[0];
+  public async create(target: Omit<Identity, "id">): Promise<Identity | undefined> {
+    const data = await db.insert(identity).values(target).returning();
+    if (data.length === 1) return data[0];
   }
 
-  public async delete(id: number): Promise<Identity> {
-    const query = {
-      text: "DELETE FROM identity WHERE id = $1",
-      values: [id],
-    };
-    const data = await db.query<Identity>(query);
-    return data.rows[0];
+  public async delete(id: number): Promise<Identity | undefined> {
+    const data = await db.delete(identity).where(eq(identity.id, id)).returning();
+    if (data.length === 1) return data[0];
   }
 }
+
+export const identityController = new IdentityController();

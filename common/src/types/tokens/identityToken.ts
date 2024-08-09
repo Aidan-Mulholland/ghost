@@ -1,5 +1,6 @@
 export type IdentityToken = {
   iss: string;
+  // id of the identity
   sub: string;
   aud: string;
   iat: string;

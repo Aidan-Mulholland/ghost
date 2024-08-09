@@ -1,7 +1,8 @@
-import pg from "pg";
+import { PoolConfig, Pool } from "pg";
+import { drizzle } from "drizzle-orm/node-postgres";
 import { envConfig } from "./env";
 
-const config: pg.PoolConfig = {
+const config: PoolConfig = {
   host: envConfig.DB_HOST,
   user: envConfig.DB_USER,
   password: envConfig.DB_PASSWORD,
@@ -11,4 +12,5 @@ const config: pg.PoolConfig = {
   connectionTimeoutMillis: 2000,
 };
 
-export const db = new pg.Pool(config);
+export const pool = new Pool(config);
+export const db = drizzle(pool);
