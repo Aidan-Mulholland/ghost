@@ -1,4 +1,4 @@
-import { Roles } from "types/roles";
+import { Roles } from "../../types/roles";
 
 // Related to the the Auth server identity table
 export type Identity = {
