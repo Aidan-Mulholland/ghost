@@ -1,5 +1,0 @@
-{
-  "/dms/[userid]/page": "app/dms/[userid]/page.js",
-  "/dms/page": "app/dms/page.js",
-  "/login/page": "app/login/page.js"
-}
