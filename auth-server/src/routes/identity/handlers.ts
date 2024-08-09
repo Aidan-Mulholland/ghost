@@ -29,7 +29,6 @@ export const loginHandler = async (req: Request, res: Response, next: NextFuncti
     }
 
     const validPassword = await compare(password, identity.password);
-    console.log(password, identity.password);
     if (!validPassword) {
       return res.status(403).end();
     }

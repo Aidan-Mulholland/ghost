@@ -4,14 +4,14 @@ import cors from "cors";
 
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors({ credentials: true, exposedHeaders: ["Set-Cookie"], origin: "http://localhost:3000" }));
 
 app.use("/", identityRouter);
 app.listen(3001, () => {
   console.log("Server ready on port 3001");
   let route: any;
-  let routes: any = [];
+  let routes: Array<string> = [];
   app._router.stack.forEach(function (middleware: any) {
     if (middleware.route) {
       // routes registered directly on the app
@@ -19,10 +19,10 @@ app.listen(3001, () => {
     } else if (middleware.name === "router") {
       // router middleware
       middleware.handle.stack.forEach(function (handler: any) {
-        route = handler.route.path;
+        route = handler.route;
         route && routes.push(route);
       });
     }
   });
-  console.log(routes);
+  console.table(routes);
 });

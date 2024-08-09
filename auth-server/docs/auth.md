@@ -14,6 +14,10 @@ The auth server also provides endpoints for token introspection which are consum
 
 ## Endpoints
 
-### Revoke
+### /login (POST)
+
+This endpoint provides login functionality, taking email and password as inputs. It then generates the password hash with salt and then
+
+### /revoke (POST)
 
 Following [RFC7009](https://datatracker.ietf.org/doc/html/rfc7009), I implemented a /revoke endpoint on the Authentication server to revoke access tokens and refresh tokens. This adds
