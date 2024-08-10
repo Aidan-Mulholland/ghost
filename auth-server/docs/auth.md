@@ -10,13 +10,25 @@ The auth server provides authentication and authorization functionality for vari
 * Sign up
 * Log out
 
-The auth server also provides endpoints for token introspection which are consumed only by the resource server for authorization. 
+The auth server also provides endpoints for token introspection which are consumed only by the resource server for authorization.
 
 ## Endpoints
 
 ### /login (POST)
 
-This endpoint provides login functionality, taking email and password as inputs. It then generates the password hash with salt and then
+This endpoint provides login functionality, taking email and password as inputs. It then finds the account with the associated email (returns 404 if not found), compares the hashed password with the provided password (returns 403 if incorrect) and then generates an access token, refresh token and identity token, setting these as cookies in the client.
+
+### /signup (POST)
+
+This endpoint provides signup functionality, creating a new user with the provided credentials and generating the same cookies as the login endpoint.
+
+### /token (POST)
+
+This endpoint is used by the client to get a new access token using a valid refresh token. The server verifies the refresh token, ensures it is not revoked and then issues a new access token with the same permissions as in the refresh token.
+
+### /validate (POST)
+
+This endpoint is used for token introspection by the resource server to verify that a token is valid. It will also be expanded to ensure the authorisation level is correct. 
 
 ### /revoke (POST)
 
