@@ -83,7 +83,29 @@ export const signupHandler = async (req: Request, res: Response, next: NextFunct
     const refreshToken = generateRefreshToken(identity);
     const identityToken = generateIdentityToken(identity);
 
-    res.status(200).json({ accessToken, refreshToken, identityToken });
+    // Store refresh token in database
+    await refreshTokenController.create(refreshToken);
+
+    res.status(200);
+    res.cookie("accessToken", accessToken, {
+      sameSite: "lax",
+      secure: true,
+      httpOnly: true,
+      path: "/",
+    });
+    res.cookie("refreshToken", refreshToken, {
+      sameSite: "lax",
+      secure: true,
+      httpOnly: true,
+      path: "/",
+    });
+    res.cookie("identityToken", identityToken, {
+      sameSite: "lax",
+      secure: true,
+      httpOnly: false,
+      path: "/",
+    });
+    res.end();
   } catch (error) {
     return next(error);
   }
