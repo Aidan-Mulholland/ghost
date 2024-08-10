@@ -2,7 +2,7 @@ import { pgTable, serial, text } from "drizzle-orm/pg-core";
 
 export const identity = pgTable("identity", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull(),
+  username: text("username").notNull(),
   email: text("email").notNull(),
   password: text("password").notNull(),
   picture: text("picture"),
@@ -20,5 +20,5 @@ export const identityRole = pgTable("identity_role", {
 
 export const refreshToken = pgTable("refresh_token", {
   id: serial("id").primaryKey(),
-  value: text("value").notNull(),
+  token: text("token").notNull(),
 });

@@ -3,7 +3,7 @@ import { Roles } from "../../types/roles";
 // Related to the the Auth server identity table
 export type Identity = {
   id: number;
-  name: string;
+  username: string;
   email: string;
   password: string;
 };

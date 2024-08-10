@@ -2383,6 +2383,7 @@ __metadata:
     "@reduxjs/toolkit": "npm:2.2.5"
     "@types/jsonwebtoken": "npm:9.0.6"
     "@types/react": "npm:18.3.3"
+    common: "workspace: *"
     framer-motion: "npm:^11.2.6"
     jsonwebtoken: "npm:9.0.2"
     next: "npm:14.2.3"

@@ -71,11 +71,11 @@ export const signupHandler = async (req: Request, res: Response, next: NextFunct
     if (!parsedReq.success) {
       return res.status(400).end();
     }
-    const { name, email, password } = parsedReq.data;
+    const { username, email, password } = parsedReq.data;
 
     const salt = await genSalt(10);
     const hashedPassword = await hash(password, salt);
-    const identity = await identityController.create({ name, email, password: hashedPassword });
+    const identity = await identityController.create({ username, email, password: hashedPassword });
     if (!identity) {
       return res.status(500).send("Failed to create account").end();
     }
@@ -184,7 +184,7 @@ export const revokeTokenHandler = async (req: Request, res: Response, next: Next
       // TODO: For scaling, this should be upgraded to a redis cache
       // Attempt to set the cache maximum of 5 times
       let attempts = 0;
-      let success: undefined | boolean | { id: number; value: string } = false;
+      let success: undefined | boolean | { id: number; token: string } = false;
       while (!success && attempts < 5) {
         success = AccessTokenCache.set(token, "");
       }
