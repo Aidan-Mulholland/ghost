@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 
 interface AccountState {
   id?: string;
-  name?: string;
+  username?: string;
   email?: string;
   picture?: string;
 }
