@@ -28,7 +28,7 @@ export default function Login() {
         setFailedLogin(true);
         return;
       }
-      router.push("/dms");
+      router.push("/account");
     } catch (error) {
       console.error(error);
     } finally {

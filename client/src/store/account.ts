@@ -4,13 +4,14 @@ import { AppState } from "./store";
 import { useSelector } from "react-redux";
 
 interface AccountState {
+  isLoggedIn: boolean;
   id?: string;
   username?: string;
   email?: string;
   picture?: string;
 }
 
-const initialState: AccountState = {};
+const initialState: AccountState = { isLoggedIn: false };
 
 export const accountSlice = createSlice({
   name: "account",
