@@ -1,20 +1,14 @@
 "use client";
 import { Inter as FontSans } from "next/font/google";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { ChakraProvider } from "@chakra-ui/react";
 import { ReactNode } from "react";
 import { Provider } from "react-redux";
 import { store } from "store/store";
+import { theme } from "util/theme";
 
 export const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
-});
-
-export const theme = extendTheme({
-  fonts: {
-    heading: "var(--font-sans)",
-    body: "var(--font-sanes)",
-  },
 });
 
 export default function RootLayout({ children }: { children: ReactNode }) {
