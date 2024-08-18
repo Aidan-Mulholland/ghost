@@ -1,3 +1,8 @@
+export type IdentityTokenData = {
+  username: string;
+  pfp: string | null;
+};
+
 export type IdentityToken = {
   iss: string;
   // id of the identity
@@ -5,7 +10,4 @@ export type IdentityToken = {
   aud: string;
   iat: string;
   exp: string;
-  name: string;
-  email: string;
-  picture?: string;
-};
+} & IdentityTokenData;

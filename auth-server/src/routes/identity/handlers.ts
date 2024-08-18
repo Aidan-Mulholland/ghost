@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import { generateAccessToken, generateRefreshToken, generateIdentityToken, verifyAccessToken } from "util/jwt";
-import { NextFunction, Request, Response } from "express";
+import { generateAccessToken, generateIdentityToken, generateRefreshToken, verifyAccessToken } from "util/jwt";
+import { NextFunction, Request, RequestHandler, Response } from "express";
 import { compare, genSalt, hash } from "bcrypt";
 import { config } from "configs/env";
 import { AccessTokenCache } from "util/cache";
@@ -11,10 +11,12 @@ import {
   signupRequestSchema,
   identityController,
   refreshTokenController,
+  newUser,
+  accountController,
 } from "common";
 import type { RefreshToken } from "common";
 
-export const loginHandler = async (req: Request, res: Response, next: NextFunction) => {
+export const loginHandler: RequestHandler = async (req, res, next) => {
   try {
     const parsedReq = loginRequestSchema.safeParse(req.body);
     if (!parsedReq.success) {
@@ -33,9 +35,11 @@ export const loginHandler = async (req: Request, res: Response, next: NextFuncti
       return res.status(403).end();
     }
 
+    const account = await accountController.get({ identityId: identity.id });
+
     const accessToken = generateAccessToken(identity);
     const refreshToken = generateRefreshToken(identity);
-    const identityToken = generateIdentityToken(identity);
+    const identityToken = generateIdentityToken(identity, account);
 
     // Store refresh token in database
     await refreshTokenController.create(refreshToken);
@@ -65,7 +69,7 @@ export const loginHandler = async (req: Request, res: Response, next: NextFuncti
   }
 };
 
-export const signupHandler = async (req: Request, res: Response, next: NextFunction) => {
+export const signupHandler: RequestHandler = async (req, res, next) => {
   try {
     const parsedReq = signupRequestSchema.safeParse(req.body);
     if (!parsedReq.success) {
@@ -75,13 +79,11 @@ export const signupHandler = async (req: Request, res: Response, next: NextFunct
 
     const salt = await genSalt(10);
     const hashedPassword = await hash(password, salt);
-    const identity = await identityController.create({ email, password: hashedPassword });
-    if (!identity) {
-      return res.status(500).send("Failed to create account").end();
-    }
+    const { identity, account } = await newUser({ email, password: hashedPassword }, { username });
+
     const accessToken = generateAccessToken(identity);
     const refreshToken = generateRefreshToken(identity);
-    const identityToken = generateIdentityToken(identity);
+    const identityToken = generateIdentityToken(identity, account);
 
     // Store refresh token in database
     await refreshTokenController.create(refreshToken);
@@ -111,7 +113,7 @@ export const signupHandler = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-export const refreshTokenHandler = async (req: Request, res: Response, next: NextFunction) => {
+export const refreshTokenHandler: RequestHandler = async (req, res, next) => {
   try {
     const parsedReq = refreshTokenRequestSchema.safeParse(req.body);
     if (!parsedReq.success) {
@@ -140,7 +142,7 @@ export const refreshTokenHandler = async (req: Request, res: Response, next: Nex
 };
 
 // TODO: Implement signature header and CORS restriction to resource server url
-export const validateAccessTokenHandler = (req: Request, res: Response) => {
+export const validateAccessTokenHandler: RequestHandler = (req, res) => {
   const verifiedToken = verifyAccessToken(req);
   if (!verifiedToken.valid) {
     const { status, reason } = verifiedToken;
@@ -149,7 +151,7 @@ export const validateAccessTokenHandler = (req: Request, res: Response) => {
   return res.status(204).end();
 };
 
-export const revokeTokenHandler = async (req: Request, res: Response, next: NextFunction) => {
+export const revokeTokenHandler: RequestHandler = async (req, res, next) => {
   try {
     // Verify incoming access token
     const verifiedToken = verifyAccessToken(req);

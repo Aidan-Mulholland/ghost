@@ -1,42 +1,52 @@
 import { pgTable, serial, text, integer } from "drizzle-orm/pg-core";
 import { eq } from "drizzle-orm";
-import { db, identity } from "..";
+import { db, IdentityTable } from "..";
 
-export const account = pgTable("account", {
+export const AccountTable = pgTable("account", {
   id: serial("id").primaryKey(),
-  identityId: integer("identity_id").references(() => identity.id),
+  identityId: integer("identity_id").references(() => IdentityTable.id),
   username: text("username").notNull(),
-  bio: text("bio").notNull(),
+  bio: text("bio"),
   picture: text("picture"),
 });
 
-export type Account = typeof account.$inferSelect;
-export type NewAccount = typeof account.$inferInsert;
+export type Account = typeof AccountTable.$inferSelect;
+export type NewAccount = typeof AccountTable.$inferInsert;
 
 export class AccountController {
-  public async get(id: number): Promise<Account | undefined> {
-    const data = await db.select().from(account).where(eq(account.id, id));
-    if (data.length === 1) return data[0];
+  public async get({ id, identityId }: { id?: number; identityId?: number }): Promise<Account> {
+    if (id) {
+      const [account] = await db.select().from(AccountTable).where(eq(AccountTable.id, id));
+      return account;
+    } else if (identityId) {
+      const [account] = await db.select().from(AccountTable).where(eq(AccountTable.identityId, identityId));
+      return account;
+    } else {
+      throw Error("No id provided");
+    }
   }
 
   public async list(): Promise<Account[]> {
-    const data = await db.select().from(account);
+    const data = await db.select().from(AccountTable);
     return data;
   }
 
-  public async update(target: Account): Promise<Account | undefined> {
-    const data = await db.update(account).set(target).where(eq(account.id, target.id)).returning();
-    if (data.length === 1) return data[0];
+  /**
+   * This should not be used as a standalone function except in exceptional circumstances. Instead use the "newUser" transaction function
+   */
+  public async create(target: Omit<Account, "id">): Promise<Account> {
+    const [account] = await db.insert(AccountTable).values(target).returning();
+    return account;
   }
 
-  public async create(target: Omit<Account, "id">): Promise<Account | undefined> {
-    const data = await db.insert(account).values(target).returning();
-    if (data.length === 1) return data[0];
+  public async update(target: Account): Promise<Account> {
+    const [account] = await db.update(AccountTable).set(target).where(eq(AccountTable.id, target.id)).returning();
+    return account;
   }
 
-  public async delete(id: number): Promise<Account | undefined> {
-    const data = await db.delete(account).where(eq(account.id, id)).returning();
-    if (data.length === 1) return data[0];
+  public async delete(id: number): Promise<Account> {
+    const [account] = await db.delete(AccountTable).where(eq(AccountTable.id, id)).returning();
+    return account;
   }
 }
 
