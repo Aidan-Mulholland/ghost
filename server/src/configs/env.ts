@@ -1,10 +1,8 @@
 import { z } from "zod";
 import "dotenv/config";
+import { baseConfigSchema } from "common";
 
-const configSchema = z.object({
-  DB_HOST: z.string(),
-  DB_USER: z.string(),
-});
+const configSchema = baseConfigSchema;
 
 export const getEnvConfig = () => {
   const parsedConfig = configSchema.parse(process.env);

@@ -2,17 +2,17 @@ import jwt from "jsonwebtoken";
 import { generateAccessToken, generateRefreshToken, generateIdentityToken, verifyAccessToken } from "util/jwt";
 import { NextFunction, Request, Response } from "express";
 import { compare, genSalt, hash } from "bcrypt";
-import { envConfig } from "configs/env";
-import { identityController } from "controllers/identity";
-import { refreshTokenController } from "controllers/refreshTokens";
+import { config } from "configs/env";
 import { AccessTokenCache } from "util/cache";
 import {
   loginRequestSchema,
-  RefreshToken,
   refreshTokenRequestSchema,
   revokeRequestSchema,
   signupRequestSchema,
+  identityController,
+  refreshTokenController,
 } from "common";
+import type { RefreshToken } from "common";
 
 export const loginHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -75,7 +75,7 @@ export const signupHandler = async (req: Request, res: Response, next: NextFunct
 
     const salt = await genSalt(10);
     const hashedPassword = await hash(password, salt);
-    const identity = await identityController.create({ username, email, password: hashedPassword });
+    const identity = await identityController.create({ email, password: hashedPassword });
     if (!identity) {
       return res.status(500).send("Failed to create account").end();
     }
@@ -122,7 +122,7 @@ export const refreshTokenHandler = async (req: Request, res: Response, next: Nex
     if (!data) {
       return res.status(403).end();
     }
-    jwt.verify(token, envConfig.REFRESH_TOKEN_SECRET, async (err, refreshToken) => {
+    jwt.verify(token, config.REFRESH_TOKEN_SECRET, async (err, refreshToken) => {
       if (err) {
         return res.status(403).send(err).end();
       }

@@ -1,7 +1,15 @@
-import { db } from "configs/db";
-import { Identity } from "common";
-import { identity } from "configs/schema";
+import { pgTable, serial, text } from "drizzle-orm/pg-core";
 import { eq } from "drizzle-orm";
+import { db } from "..";
+
+export const identity = pgTable("identity", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull(),
+  password: text("password").notNull(),
+});
+
+export type Identity = typeof identity.$inferSelect;
+export type NewIdentity = typeof identity.$inferInsert;
 
 export class IdentityController {
   public async get(options: { id?: number; email?: string }): Promise<Identity | undefined> {

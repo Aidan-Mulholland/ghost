@@ -9,7 +9,7 @@ app.use(cors({ credentials: true, exposedHeaders: ["Set-Cookie"], origin: "http:
 
 app.use("/", identityRouter);
 app.listen(3001, () => {
-  console.log("Server ready on port 3001");
+  console.log("Auth server ready on port 3001");
   let route: any;
   let routes: Array<string> = [];
   app._router.stack.forEach(function (middleware: any) {
